@@ -1,0 +1,33 @@
+import threading
+
+class ReaderWriterLock:
+    def __init__(self):
+        self.readers = 0
+        self.reader_lock = threading.Lock()   
+        self.writer_lock = threading.Lock()   
+
+    def acquire_read(self):
+        self.reader_lock.acquire()
+        self.readers += 1
+
+        # First reader blocks writers
+        if self.readers == 1:
+            self.writer_lock.acquire()
+
+        self.reader_lock.release()
+
+    def release_read(self):
+        self.reader_lock.acquire()
+        self.readers -= 1
+
+        # Last reader allows writers
+        if self.readers == 0:
+            self.writer_lock.release()
+
+        self.reader_lock.release()
+
+    def acquire_write(self):
+        self.writer_lock.acquire()
+
+    def release_write(self):
+        self.writer_lock.release()
