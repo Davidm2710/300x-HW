@@ -1,0 +1,29 @@
+import threading
+class BankAccount:
+    def __init__(self, account_id, balance):
+        self.account_id = account_id
+        self.balance = balance
+        self.lock = threading.Lock()
+
+    def withdraw(self, amount):
+        self.balance -= amount
+
+    def deposit(self, amount):
+        self.balance -= amount
+    
+def transfer(from_account : BankAccount, to_account : BankAccount, amount : float):
+    if from_account.account_id < to_account.account_id:
+        first = from_account
+        second = to_account
+    else:
+        first = to_account
+        second = from_account
+
+    first.lock.acquire()
+    second.lock.acquire()
+
+    from_account.withdraw(amount)
+    to_account.deposit(amount)
+    
+    second.lock.release()
+    first.lock.release()
